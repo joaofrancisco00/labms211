@@ -18,6 +18,9 @@ def iterar_newton_arctg(x0, max_iter=10):
         except OverflowError:
             historico.append(float('inf'))
             break
+
+    while len(historico) < max_iter + 1:
+        historico.append(float('inf'))
     return historico
 
 def criar_tabela(nome_metodo, salvar_latex=True):
@@ -76,6 +79,58 @@ def gerar_grafico_semilog(x0_lista=[0.5, 1, 1.3, 1.4, 1.5, 2]):
 
     plt.show()
 
+def calcular_limiar_x_estrela():
+    h = lambda x: 2*x - (1 + x**2) * math.atan(x)
+    
+    res = raizes.calc_bisection(h, 1.0, 1.5, tol=1e-10)
+    x_estrela = res["history"][-1]
+    
+    print(f"\n{'='*55}")
+    print("Item (b) — Ponto Limiar de Fronteira (x*)")
+    print(f"{'='*55}")
+    print(f"x* encontrado: {x_estrela:.10f}")
+    print(f"Iterações da Bissecção: {res['iteration']}")
+    print(f"Resíduo h(x*): {h(x_estrela):.4e}")
+    print(f"{'='*55}\n")
+    
+    return x_estrela
+
+
+def testar_tres_regimes(x_estrela):
+    
+    casos = {
+        "|x0| < x* (1.20)": 1.20,
+        "|x0| < x* (1.35)": 1.35,
+        "|x0| = x* (+x*)": x_estrela,
+        "|x0| = x* (-x*)": -x_estrela,
+        "|x0| > x* (1.45)": 1.45,
+        "|x0| > x* (1.80)": 1.80,
+    }
+    
+    max_k = 25 
+    dados = {"k": list(range(max_k + 1))}
+    formatadores = {"k": "{:d}".format}
+    
+    for rotulo, val in casos.items():
+        hist = iterar_newton_arctg(val, max_iter=max_k)
+        dados[rotulo] = hist
+        formatadores[rotulo] = "{:.4e}".format
+        
+    df_regimes = pd.DataFrame(dados)
+    
+    print(f"\n{'='*85}\nTabela dos 3 Regimes — Item (c)\n{'='*85}")
+    print(df_regimes.to_string(index=False, formatters=formatadores, line_width=1000))
+    
+    caminho_tex = os.path.join(DIRETORIO_LOCAL, "tabela_caso2_regimes.tex")
+    df_regimes.to_latex(caminho_tex, index=False, formatters=formatadores)
+    print(f"\nTabela dos regimes salva em: {caminho_tex}")
+    
+    return df_regimes
+
+
 criar_tabela("Newton_arctg", salvar_latex=True)
+
+x_estrela = calcular_limiar_x_estrela()
+df_regimes = testar_tres_regimes(x_estrela)
 
 gerar_grafico_semilog()
