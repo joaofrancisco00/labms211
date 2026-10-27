@@ -47,7 +47,7 @@ def calc_bisection(f, a, b, tol=1e-10, max_iter=100):
         fc = f(c)
         n_f += 1
         if fc == 0:
-            return { "history": history, "iteration": iteration, "count_f": n_f, "convergiu": True }
+            return { "history": history, "iteration": iteration + 1, "count_f": n_f, "convergiu": True }
         elif fa * fc < 0:
             b = c
             fb = fc
