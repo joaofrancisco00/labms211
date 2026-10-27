@@ -1,9 +1,13 @@
+import math
+import os
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 import pandas as pd
 
 import raizes
+
+# Diretório onde este script está localizado (pasta tema2)
+DIRETORIO_LOCAL = os.path.dirname(os.path.abspath(__file__))
 
 f1 = lambda x: x**3 - 3*x + 1
 df1 = lambda x: 3*x**2 - 3
@@ -48,8 +52,9 @@ def gerar_grafico(res_bis, res_sec, res_newt):
     plt.grid(True, linestyle=":", alpha=0.6)
     plt.legend(fontsize=10)
 
-    plt.savefig("grafico_dk_caso1.png", dpi=300, bbox_inches='tight')
-    print("Gráfico salvo como 'grafico_dk_caso1.png'")
+    caminho_grafico = os.path.join(DIRETORIO_LOCAL, "grafico_dk_caso1.png")
+    plt.savefig(caminho_grafico, dpi=300, bbox_inches='tight')
+    print(f"Gráfico salvo como '{caminho_grafico}'")
 
     plt.show()
 
@@ -77,9 +82,10 @@ def gerar_tabela(nome_metodo, resultado, salvar_latex=True):
     print(df.to_string(index=False, formatters=formatadores))
 
     if salvar_latex:
-        nome_arquivo = f"tabela_{nome_metodo.lower()}.tex"
+        metodo_slug = nome_metodo.lower().replace("ç", "c").replace("ã", "a")
+        nome_arquivo = os.path.join(DIRETORIO_LOCAL, f"tabela_{metodo_slug}.tex")
         df.to_latex(nome_arquivo, index=False, formatters=formatadores)
-        print(f"\nTabela LaTeX salva em: {nome_arquivo}")
+        print(f"Tabela LaTeX salva em: {nome_arquivo}")
 
     return df
 
@@ -114,8 +120,35 @@ def gerar_tabela_resumo(res_bis, res_sec, res_newt):
     df_resumo = pd.DataFrame(resumo)
     print(f"\n{'='*65}\nResumo Comparativo dos Métodos\n{'='*65}")
     print(df_resumo.to_string(index=False, line_width=1000))
-    df_resumo.to_latex("tabela_resumo.tex", index=False)
+    caminho_resumo = os.path.join(DIRETORIO_LOCAL, "tabela_resumo.tex")
+    df_resumo.to_latex(caminho_resumo, index=False)
+    print(f"Tabela Resumo LaTeX salva em: {caminho_resumo}")
 
+
+def calcular_ordem_assintotica(nome_metodo, resultado, teoria):
+    hist = resultado["history"]
+
+    erros = [abs(x - alpha) for x in hist]
+
+    print(f"\n{'='*50}")
+    print(f"Ordem Assintótica Estimada (p_k) — {nome_metodo}")
+    print(f"Valor Teórico: {teoria}")
+    print(f"{'='*50}")
+    print(f"{'k':<4} | {'e_k':<12} | {'p_k estimado':<15}")
+    print(f"{'-'*50}")
+
+    for k in range(1, len(erros) - 1):
+        e_k = erros[k]
+        e_k_menos_1 = erros[k - 1]
+        e_k_mais_1 = erros[k + 1]
+
+        if e_k_menos_1 > 1e-14 and e_k_mais_1 > 1e-14 and e_k > 1e-14:
+            numerador = math.log(e_k_mais_1 / e_k)
+            denominador = math.log(e_k / e_k_menos_1)
+            p_k_estimado = numerador / denominador if denominador != 0 else float('inf')
+            print(f"{k:<4d} | {e_k:<12.4e} | {p_k_estimado:<15.4f}")
+    
+    print(f"{'-'*50}\n")
 
 
 res_newton, res_secante, res_bissecao = calcular_raizes()
@@ -125,5 +158,10 @@ gerar_tabela("Secante", res_secante)
 gerar_tabela("Bissecção", res_bissecao)
 
 gerar_tabela_resumo(res_bissecao, res_secante, res_newton)
+
+calcular_ordem_assintotica("Newton", res_newton, "2.0000 (Quadrática)")
+calcular_ordem_assintotica("Secante", res_secante, "1.6180 (Razão Áurea)")
+
+gerar_grafico(res_bissecao, res_secante, res_newton)
 
 gerar_grafico(res_bissecao, res_secante, res_newton)
