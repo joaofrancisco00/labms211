@@ -1,0 +1,40 @@
+[absorção] 50 + 0.4 = 50  (real: 50.4)
+[absorção] 1 + 0.04 = 1  (real: 1.04)
+[absorção] 9.9 + 0.04 = 9.9  (real: 9.94)
+[absorção] 10 + 0.4 = 10  (real: 10.4)
+[assoc. soma] (50+0.4)+0.4 = 50  ≠  50+(0.4+0.4) = 51
+[assoc. produto] (0.17·0.17)·0.73 = 0.021  ≠  0.17·(0.17·0.73) = 0.02
+[cancelamento] x²−y²: real=1.81, fl(x²)−fl(y²)=2 (erro 0.19), (x−y)(x+y)=1.8 (erro 0.01)
+[cancelamento] (5 + 0.04) − 5 = 0  (real: 0.04)
+[distrib.] 5539 de 13820 triplas testadas violam a·(b+c) = a·b + a·c
+[distrib.] 7·(2.2+2.2) = 31  ≠  7·2.2 + 7·2.2 = 30
+[inverso] (1/3)·3 = 0.99  ≠  1
+[elements] 360 elementos positivos, de 0.01 a 99.0
+[varredura] 2819 operações comparadas com a referência
+[ok] sum(1.5, 2.5) = 4
+[ok] sum(0.12, 3.4) = 3.5
+[ok] sum(9.9, 0.1) = 10
+[ok] sum(-1.5, 2.5) = 1
+[ok] sum(-4, -3) = -7
+[ok] subtraction(5, 2) = 3
+[ok] subtraction(9.9, 0.1) = 9.8
+[ok] subtraction(0.5, 0.25) = 0.25
+[ok] subtraction(2, 5) = -3
+[ok] product(2.5, 4) = 10
+[ok] product(1.1, 3) = 3.3
+[ok] product(0.12, 0.5) = 0.06
+[ok] product(-2, 3) = -6
+[ok] product(-2, -3) = 6
+[ok] division(7, 2) = 3.5
+[ok] division(1, 3) = 0.33
+[ok] division(2, 3) = 0.67
+[ok] division(-7, 2) = -3.5
+[ok] division(-6, -3) = 2
+[falha esperada] sum(50, 50) -> overflow
+[falha esperada] product(20, 20) -> overflow
+[falha esperada] division(1, 0.01) -> overflow
+[falha esperada] product(0.1, 0.01) -> underflow
+[falha esperada] division(0.01, 99) -> underflow
+[parâmetros] xmin = 0.01, xmax = 99.0
+[figuras] geradas: figuras/reta_F10_2_-1_2.png, figuras/espacamento_F10_2_-1_2.png
+[round] 2669 valores comparados com o arredondamento de referência
